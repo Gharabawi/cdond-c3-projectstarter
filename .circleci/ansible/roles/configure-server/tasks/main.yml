@@ -20,6 +20,11 @@
   shell: |
     cd ~/
     chmod +x install.sh
+- name: "Push backend artifact"
+  copy:
+    src: install_nvm.sh 
+    dst: ~/install_nvm.sh
+    mode: 0750  
 - name: "run script"
   script: ~/install.sh 
     # sh install.sh &>/dev/null || exit 0

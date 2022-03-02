@@ -1,0 +1,12 @@
+#!/bin/bash
+sh install.sh
+if [ $? -ne 0  ]
+then
+  echo "The script ran ok"
+  exit 0
+else
+  echo "The script failed" >&2
+  exit 1
+fi
+source ~/.bashrc
+nvm install v13.8.0
