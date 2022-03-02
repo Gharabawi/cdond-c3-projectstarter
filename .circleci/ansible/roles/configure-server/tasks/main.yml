@@ -11,12 +11,18 @@
   become: yes
   apt: 
     autoremove: yes
-- name: "Install Dependencies"
+- name: "Install node"
+  become: yes
+  shell: |
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+    source ~/.bashrc
+    nvm install v13.8.0
+- name: "Install npm"
   become: yes
   apt: 
     name: ["nodejs","npm"]
     state: latest
-    update_cache: yes
+    update_cache: yes    
 - name: "Install pm2"
   become: yes
   shell: |
