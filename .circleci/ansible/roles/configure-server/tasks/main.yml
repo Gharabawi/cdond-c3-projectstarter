@@ -11,12 +11,16 @@
   become: yes
   apt: 
     autoremove: yes
+- name: "Download nvm install.sh"
+  get_url:
+    url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh
+    dest: ~/install.sh
 - name: "Install node"
   become: yes
   shell: |
-    curl "https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh" -o install.sh
+    cd ~/
     chmod +x install.sh
-    ./install.sh
+    sh install.sh
     source ~/.bashrc
     nvm install v13.8.0
 - name: "Install npm"

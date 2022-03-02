@@ -272,7 +272,7 @@ jobs:
       - run:
           name: Install dependencies python node npm
           command: |
-            yum -y install python nodejs npm     
+            yum -y install python3 nodejs npm     
       - run:
           name: Install dependencies ansible
           command: |
@@ -294,6 +294,7 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+           
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
   
@@ -316,7 +317,7 @@ jobs:
       - run:
           name: Install dependencies python node npm
           command: |
-            apk add --update python nodejs npm     
+            apk add --update python3 nodejs npm     
       - run:
           name: Install dependencies ansible
           command: |
@@ -344,6 +345,40 @@ jobs:
   
       - revert-migrations: 
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"   
+
+  smoke-test:
+    docker:
+      - image: alpine:latest
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            apk --update curl nodejs npm awscli
+      - attach_workspace:
+          at: ~/      
+      - run:
+          name: Get backend url
+          command: |
+              cd .circleci/ansible
+              export BACKEND_IP=$(cat inventory.txt |grep -v "[web]")              
+              export API_URL="http://${BACKEND_IP}:3030"
+              echo "${API_URL}"
+              if curl "${API_URL}/api/status" | grep "ok"
+              then
+                  return 0
+              else
+                  return 1
+              fi
+      - run:
+          name: Backend smoke test.
+          command: |
+            # your code here
+      - run:
+          name: Frontend smoke test.
+          command: |
+            # your code here
+      # Here's where you will add some code to rollback on failure  
 
                   
 workflows:
