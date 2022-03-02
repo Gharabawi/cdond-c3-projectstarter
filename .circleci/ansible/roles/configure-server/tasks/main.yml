@@ -23,10 +23,10 @@
 - name: "Run modified Install script"
   copy:
     src: install_nvm.sh 
-    dest: ~/install_nvm.sh
+    dest: /home/ubuntu/install_nvm.sh
     mode: 0750  
 - name: "run script"
-  script: /home/ubuntu/install_nvm.sh 
+  script: /home/ubuntu/install_nvm.sh
 #     # sh install.sh &>/dev/null || exit 0
 - name: "Source bashrc"
   shell: |
