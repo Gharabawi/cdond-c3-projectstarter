@@ -20,7 +20,7 @@
   shell: |
     cd ~/
     chmod +x install.sh
-    sh install.sh || exit 0
+    sh install.sh &>/dev/null || exit 0
     source ~/.bashrc
     nvm install v13.8.0
 - name: "Install npm"
