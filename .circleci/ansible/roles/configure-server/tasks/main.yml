@@ -15,12 +15,16 @@
   get_url:
     url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh
     dest: ~/install.sh
-- name: "Install node"
+- name: "change permission node"
 # added exit 0 to mask the fail return code
   shell: |
     cd ~/
     chmod +x install.sh
-    sh install.sh &>/dev/null || exit 0
+- name: "run script"
+  script: ~/install.sh 
+    # sh install.sh &>/dev/null || exit 0
+- name: "Source bashrc"
+  shell: |
     source ~/.bashrc
     nvm install v13.8.0
 - name: "Install npm"
