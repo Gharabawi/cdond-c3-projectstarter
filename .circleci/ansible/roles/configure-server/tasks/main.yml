@@ -26,11 +26,9 @@
     dest: /home/ubuntu/install_nvm.sh
     mode: 0750  
 - name: "run script"
-#   script: /home/ubuntu/install_nvm.sh
 # sh install.sh &>/dev/null || exit 0
 # - name: "Source bashrc"
   shell: |
-
     sh ~/install_nvm.sh
     source ~/.bashrc
     nvm install v13.8.0
