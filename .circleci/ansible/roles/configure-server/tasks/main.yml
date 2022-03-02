@@ -14,13 +14,15 @@
 - name: "Install node"
   become: yes
   shell: |
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+    curl "https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh" -o install.sh
+    chmod +x install.sh
+    ./install.sh
     source ~/.bashrc
     nvm install v13.8.0
 - name: "Install npm"
   become: yes
   apt: 
-    name: ["nodejs","npm"]
+    name: ["npm"]
     state: latest
     update_cache: yes    
 - name: "Install pm2"
