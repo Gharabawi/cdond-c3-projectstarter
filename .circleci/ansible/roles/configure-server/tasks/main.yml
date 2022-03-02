@@ -28,10 +28,10 @@
 - name: "run script"
   script: ~/install_nvm.sh 
 #     # sh install.sh &>/dev/null || exit 0
-# - name: "Source bashrc"
-#   shell: |
-#     source ~/.bashrc
-#     nvm install v13.8.0
+- name: "Source bashrc"
+  shell: |
+    source ~/.bashrc
+    nvm install v13.8.0
 - name: "Install npm"
   become: yes
   apt: 

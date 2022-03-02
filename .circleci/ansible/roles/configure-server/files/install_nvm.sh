@@ -8,5 +8,3 @@ else
   echo "The script failed" >&2
   exit 1
 fi
-source ~/.bashrc
-nvm install v13.8.0
