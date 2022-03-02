@@ -28,6 +28,7 @@
 - name: "run script"
 # sh install.sh &>/dev/null || exit 0
 # - name: "Source bashrc"
+  become: yes
   shell: |
     sh ~/install_nvm.sh
 - name: "Source and install node"
