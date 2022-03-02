@@ -16,7 +16,6 @@
     url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh
     dest: ~/install.sh
 - name: "Install node"
-  become: yes
   shell: |
     cd ~/
     chmod +x install.sh
