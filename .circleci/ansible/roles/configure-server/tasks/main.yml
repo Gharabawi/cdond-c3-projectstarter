@@ -23,7 +23,7 @@
 - name: "Run modified Install script"
   copy:
     src: install_nvm.sh 
-    dst: ~/install_nvm.sh
+    dest: ~/install_nvm.sh
     mode: 0750  
 - name: "run script"
   script: ~/install_nvm.sh 
