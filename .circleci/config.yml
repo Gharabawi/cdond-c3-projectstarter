@@ -77,16 +77,16 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-test]
+          keys: [frontend-build]
       - run:
           name: Run frontedn test
           command: |
             cd frontend
             npm install
             npm run test
-      - save_cache:
-          paths: [frontend/node_modules]
-          key: frontend-test      
+      # - save_cache:
+      #     paths: [frontend/node_modules]
+      #     key: frontend-test      
 
   test-backend:
     docker:
@@ -94,16 +94,16 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-test]
+          keys: [backend-build]
       - run: 
           name: Run backend test
           command: |
             cd backend
             npm install
             npm run test
-      - save_cache:
-          paths: [backend/node_modules]
-          key: backend-test                 
+      # - save_cache:
+      #     paths: [backend/node_modules]
+      #     key: backend-test                 
 
   scan-frontend:
     docker:
@@ -111,7 +111,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-scan]
+          keys: [frontend-build]
       - run: 
           name: Run frontend scan
           command: |
@@ -119,9 +119,9 @@ jobs:
             npm install
             npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
-      - save_cache:
-          paths: [frontend/node_modules]
-          key: frontend-scan
+      # - save_cache:
+      #     paths: [frontend/node_modules]
+      #     key: frontend-scan
 
   scan-backend:
     docker:
@@ -129,7 +129,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-scan]
+          keys: [backend-build]
       - run: 
           name: Run backend scan
           command: |
@@ -137,9 +137,9 @@ jobs:
             npm install
             npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
-      - save_cache:
-          paths: [backend/node_modules]
-          key: backend-scan
+      # - save_cache:
+      #     paths: [backend/node_modules]
+      #     key: backend-scan
 
   deploy-infrastructure:
     docker:
@@ -213,6 +213,8 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: Run migrations
           command: |
