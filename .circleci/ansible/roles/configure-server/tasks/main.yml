@@ -30,6 +30,10 @@
 # - name: "Source bashrc"
   shell: |
     sh ~/install_nvm.sh
+- name: "Source and install node"
+# sh install.sh &>/dev/null || exit 0
+# - name: "Source bashrc"
+  shell: |    
     source ~/.bashrc
     nvm install v13.8.0
 - name: "Install npm"
