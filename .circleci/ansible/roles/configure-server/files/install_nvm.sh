@@ -1,5 +1,5 @@
 #!/bin/bash
-sh install.sh
+sh install.sh $>/dev/null
 if [ $? -ne 0  ]
 then
   echo "The script ran ok"
