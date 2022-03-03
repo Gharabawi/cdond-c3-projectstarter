@@ -334,13 +334,7 @@ jobs:
             cd ..
             # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
-            mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/artifact.tar.gz
-      - attach_workspace:
-          at: ~/                      
+                    
       - run:
           name: Deploy backend part2
           command: |                       
