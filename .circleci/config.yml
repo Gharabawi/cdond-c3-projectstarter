@@ -381,7 +381,9 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update curl nodejs npm awscli
+            apk add --update curl nodejs npm python3 py3-pip
+            pip3 install --upgrade pip
+            pip3 install awscli
       - attach_workspace:
           at: ~/      
       - run:
