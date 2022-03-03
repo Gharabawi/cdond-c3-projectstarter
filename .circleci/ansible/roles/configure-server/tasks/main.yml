@@ -14,8 +14,7 @@
 - name: "nodejs"
   become: yes
   shell: |
-    curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
-    sudo apt-get install -y nodejs
+    nvm install node 13.8.0
     sudo npm install -g npm
   
 - name: "Install pm2"
