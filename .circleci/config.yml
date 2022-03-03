@@ -321,7 +321,9 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-           
+      - save_cache:
+          paths: [frontend-deploy/node_modules]
+          key: frontend-deploy           
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
   
@@ -390,14 +392,13 @@ jobs:
             pip3 install --upgrade pip
             pip3 install awscli
       - attach_workspace:
-          at: ~/      
+          at: ~/   
+      - restore_cache:
+          keys: [frontend-deploy]             
       - run:
           name: Get backend url
           command: |
-            cd .circleci/ansible
             echo $BACKEND_IP
-          # export BACKEND_IP=$(cat inventory.txt |grep -v "[web]")
-
 
       - run:
           name: Backend smoke test.
