@@ -228,12 +228,32 @@ jobs:
             ansible-playbook -i inventory.txt configure-server.yml
       - run:
           name: Install node and npm using nvm
+
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+  configure-node-and-npm:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["d2:b4:ba:2f:6b:fe:a2:87:fe:6d:80:f0:f7:ea:c0:cc"]
+      
+      - attach_workspace:
+          at: ~/      
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible
+            pip3 install awscli
+            aws --version      
+      - run:
+          name: Install node and npm using nvm
           command: |
             cd .circleci/ansible
             ansible-playbook -i inventory.txt install-using-nvm.yml
       - destroy-environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
- 
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
   run-migrations:
     docker:
@@ -430,8 +450,10 @@ workflows:
             - scan-backend
       - configure-infrastructure:
           requires: [deploy-infrastructure]
+      - configure-node-and-npm:
+          requires: [configure-infrastructure]
       - run-migrations:
-          requires: [configure-infrastructure]  
+          requires: [configure-node-and-npm]  
       - deploy-frontend:
           requires: [run-migrations]    
       - deploy-backend:

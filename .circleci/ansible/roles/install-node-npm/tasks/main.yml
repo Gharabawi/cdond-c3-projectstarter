@@ -1,9 +1,7 @@
 ---
 - name: install node and npm using nvm
   become: yes
-  shell: |
-    nvm install-latest-npm
-    nvm install 13.8.0
+  script: install_node.sh
 - name: "Install pm2"
   become: yes
   npm:
