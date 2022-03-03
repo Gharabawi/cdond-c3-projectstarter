@@ -14,15 +14,10 @@
 - name: "nodejs"
   become: yes
   shell: |
-    curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+    curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
     sudo apt-get install -y nodejs
-
-- name: "Install dependencies"
-  become: yes
-  apt: 
-    name: ["npm"]
-    state: latest
-    update_cache: yes    
+    sudo apt-get install build-essential
+  
 - name: "Install pm2"
   become: yes
   npm:
