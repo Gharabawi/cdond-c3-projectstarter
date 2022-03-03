@@ -365,9 +365,13 @@ jobs:
           command: |                       
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is $(cat inventory.txt |grep -v "web")"
+            echo 'BACKEND_IP=$(cat inventory.txt |grep -v "web")' >> ~/backend/.env
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
-           
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/backend/.env          
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
   
@@ -390,13 +394,14 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            source ~/.bashrc
+            cd .circleci/ansible
+            echo $BACKEND_IP
+          # export BACKEND_IP=$(cat inventory.txt |grep -v "[web]")
 
 
       - run:
           name: Backend smoke test.
           command: |
-            # source ~/.bashrc
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
