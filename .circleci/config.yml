@@ -398,7 +398,7 @@ jobs:
             pip3 install awscli
       - attach_workspace:
           at: ~/   
-      - get-backend-url:
+      - get-backend-url
       - run:
           name: Backend smoke test.
           command: |
