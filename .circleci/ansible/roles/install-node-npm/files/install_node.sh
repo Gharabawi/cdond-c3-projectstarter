@@ -3,5 +3,5 @@
 # sudo su -c 'nvm install 13.8.0'
 # sudo su ubuntu -c 'nvm install-latest-npm'
 # sudo su ubuntu -c 'nvm install 13.8.0'
-nvm install-latest-npm
-nvm install 13.8.0
+. ~/.profile; nvm install-latest-npm
+. ~/.profile; nvm install 13.8.0
