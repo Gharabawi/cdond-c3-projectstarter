@@ -1,6 +1,5 @@
 ---
 - name: install node and npm using nvm
-  become: yes
   script: install_node.sh
 - name: "Install pm2"
   become: yes
