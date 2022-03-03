@@ -29,8 +29,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            
-            SUCCESS = $(cat backend/migration_status.txt)
+            export SUCCESS=$(cat backend/migration_status.txt)
             if(( $SUCCESS==1 )); 
             then
              cd ~/project/backend
@@ -249,7 +248,7 @@ jobs:
           name: Send migration results to file
           command: |
             cd backend
-            echo "1">> migration_status.txt
+            echo "1"> migration_status.txt
 
       - persist_to_workspace:
           root: ~/
@@ -257,11 +256,13 @@ jobs:
             - project/backend/migration_status.txt
       # - destroy-environment:
       #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
 
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - attach_workspace:
@@ -269,15 +270,16 @@ jobs:
       - run:
           name: Install dependencies tar gzip
           command: |
-            yum -y install tar gzip 
+            apk add --update ansible tar gzip 
       - run:
           name: Install dependencies python node npm
           command: |
-            yum -y install python3 nodejs npm     
+            apk add --update ansible nodejs npm     
       - run:
-          name: Install dependencies ansible
+          name: Install dependencies ansible awscli
           command: |
-            yum -y                 
+            apk add --update ansible
+            pip3 install awscli                
       - run:
           name: Get backend url
           command: |
@@ -314,7 +316,7 @@ jobs:
       - run:
           name: Install dependencies tar gzip
           command: |
-            apk add --update install tar gzip 
+            apk add --update  tar gzip 
       - run:
           name: Install dependencies python node npm
           command: |
