@@ -9,6 +9,7 @@
     src: ~/project/artifact.tar.gz
     dest: ~/backend
 - name: "Start the App"
+  become: yes
   shell: |
     cd ~/backend
     npm install
