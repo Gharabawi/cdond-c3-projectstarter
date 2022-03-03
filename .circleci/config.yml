@@ -320,11 +320,12 @@ jobs:
           command: |
             apk add --update python3 nodejs npm     
       - run:
-          name: Install dependencies ansible
+          name: Install dependencies ansible awscli
           command: |
-            apk add --update ansible 
+            apk add --update ansible
+            pip3 install awscli  
       - run:
-          name: Deploy backend
+          name: Deploy backend part1
           command: |
             cd backend
             npm i
@@ -333,14 +334,20 @@ jobs:
             # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
             cp artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            .circleci/ansible/roles/deploy/files/artifact.tar.gz
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Deploy backend part2
+          command: |                       
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is $(cat inventory.txt |grep -v "web")"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            .circleci/ansible/roles/deploy/files/artifact.tar.gz            
+           
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
   
