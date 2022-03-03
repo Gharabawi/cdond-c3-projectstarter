@@ -4,16 +4,13 @@
     path: ~/backend
     state: directory
 
-- name: "Push backend artifact"
-  copy:
-    src: artifact.tar.gz 
-    dst: ~/backend
-
-- name: "Extract Artifact"
-  shell: |
-    tar -xzvf artifact.tar.gz
+- name: Push and extract artifact
+  unarchive:
+    src: ~/profile/artifact.tar.gz
+    dest: ~/backend
 - name: "Start the App"
   shell: |
+    cd ~/backend
     npm install
     npm audit fix 
     pm2 stop default
