@@ -35,3 +35,7 @@ Resources:
       Tags:
         - Key: Name
           Value: !Sub backend-${ID}
+      UserData:
+        Fn::Base64: !Sub |
+              #!/bin/bash
+              curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash 
