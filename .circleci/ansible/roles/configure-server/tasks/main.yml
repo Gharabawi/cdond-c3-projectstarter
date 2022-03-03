@@ -11,36 +11,10 @@
   become: yes
   apt: 
     autoremove: yes
-- name: "Download nvm install.sh"
-  get_url:
-    url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh
-    dest: ~/install.sh
-- name: "change permission node"
-# added exit 0 to mask the fail return code
-  shell: |
-    cd ~/
-    chmod +x install.sh
-- name: "Run modified Install script"
-  copy:
-    src: install_nvm.sh 
-    dest: /home/ubuntu/install_nvm.sh
-    mode: 0750  
-- name: "run script"
-# sh install.sh &>/dev/null || exit 0
-# - name: "Source bashrc"
-  become: yes
-  shell: |
-    sh ~/install_nvm.sh
-- name: "Source and install node"
-# sh install.sh &>/dev/null || exit 0
-# - name: "Source bashrc"
-  shell: |    
-    source ~/.bashrc
-    nvm install v13.8.0
-- name: "Install npm"
+- name: "Install dependencies"
   become: yes
   apt: 
-    name: ["npm"]
+    name: ["nodejs","npm"]
     state: latest
     update_cache: yes    
 - name: "Install pm2"
