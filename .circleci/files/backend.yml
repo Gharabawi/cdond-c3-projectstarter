@@ -38,6 +38,10 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
               #!/bin/bash
-              curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash 
-              source ~/.profile
-              source ~/.bashrc
+              sudo su -c 'curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash'
+              curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+              sudo su -c 'source /root/.profile'
+              sudo su -c 'source /root/.bashrc'
+              source /home/ubuntu/.profile
+              source /home/ubuntu/.bashrc
+

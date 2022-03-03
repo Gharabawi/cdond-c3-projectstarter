@@ -14,10 +14,17 @@
 - name: "nodejs"
   become: yes
   shell: |
+    source /root/.bashrc
+    source /root/.profile   
+    nvm install-latest-npm
+    nvm install 13.8.0
+    sudo npm install -g npm
+- name: "nodejs for ubun user"
+  shell: |
     source /home/ubuntu/.bashrc
     source /home/ubuntu/.profile    
     nvm install 13.8.0
-    sudo npm install -g npm
+  # sudo npm install -g npm    
   # curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
   # sudo apt-get install -y nodejs
   # sudo npm install -g npm
