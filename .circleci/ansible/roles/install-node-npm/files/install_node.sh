@@ -6,8 +6,9 @@
 # sudo su ubuntu -c 'source ~/.profile; nvm install-latest-npm'
 # sudo su ubuntu -c 'source ~/.profile; nvm install 13.8.0'
 sudo -i -u ubuntu bash << EOF
-source ~/.profile
+source ~/.nvm/nvm.sh
+sleep 2
 nvm install 13.8.0
-sleep 10
+sleep 2
 npm install pm2@latest -g
 EOF
