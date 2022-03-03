@@ -11,21 +11,19 @@
   become: yes
   apt: 
     autoremove: yes
-# - name: "Add nvm script to target"
-#   copy:
-#     src: install_nvm.sh
-#     dest: /home/ubuntu/
-# - name: "install nvm and npm"
-#   become: yes
-#   shell: |
-#     su -c 'sh install_nvm.sh'
+- name: "Add nvm script to target"
+  copy:
+    src: install_nvm.sh
+    dest: /home/ubuntu/
+- name: "install nvm and npm"
+  become: yes
+  script: /home/ubuntu/install_nvm.sh
 - name: "Add node script to target"
   copy:
     src: install_node.sh
     dest: /home/ubuntu/    
 - name: "nodejs for ubun user"
-  become: yes
-  script: install_node.sh
+  script: /home/ubuntu/install_node.sh
   # sudo npm install -g npm    
   # curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
   # sudo apt-get install -y nodejs
