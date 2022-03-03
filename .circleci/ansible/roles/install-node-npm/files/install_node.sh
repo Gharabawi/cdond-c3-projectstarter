@@ -9,4 +9,5 @@ sudo -i -u ubuntu bash << EOF
 source ~/.nvm/nvm.sh
 nvm install-latest-npm
 nvm install 13.8.0
+npm install pm2@latest -g
 EOF
