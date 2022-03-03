@@ -5,15 +5,15 @@ orbs:
 commands:
   get-backend-url:
     description: Get the IP of backend 
-    parameters:
-      location:
-        type: string
     steps:
       - run:
           name: Get backend url
           command: |
             cd <<  parameters.location >>
-            echo 'export BACKEND_IP=$(cat inventory.txt |grep -v "[web]")' >> $BASH_ENV
+            echo 'export BACKEND_IP=$(aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --output text)' >> $BASH_ENV
 
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -322,7 +322,7 @@ jobs:
           command: |
             cd .circleci/ansible
             export BACKEND_IP=$(cat inventory.txt |grep -v "[web]")
-            export API_URL="http://${BACKEND_IP}:3030"
+            export API_URL='http://"${BACKEND_IP}":3030'
       - run:
           name: Deploy frontend objects
           command: |
@@ -399,8 +399,6 @@ jobs:
       - attach_workspace:
           at: ~/   
       - get-backend-url:
-          location: .circleci/ansible
-
       - run:
           name: Backend smoke test.
           command: |
