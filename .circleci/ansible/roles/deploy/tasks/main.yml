@@ -15,6 +15,6 @@
 - name: "Start the App"
   shell: |
     npm install
-    npm audit fix --force
+    npm audit fix 
     pm2 stop default
     pm2 start npm --start        
