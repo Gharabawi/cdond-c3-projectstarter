@@ -226,7 +226,7 @@ jobs:
           command: |
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
-       run:
+      - run:
           name: Install node and npm using nvm
           command: |
             cd.circleci/ansible
