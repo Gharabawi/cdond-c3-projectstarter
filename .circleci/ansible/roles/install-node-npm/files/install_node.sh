@@ -12,3 +12,10 @@ nvm install 13.8.0
 sleep 2
 npm install pm2@latest -g
 EOF
+sudo -i -u ubuntu bash << EOF
+source ~/.profile
+OLDPATH= echo $PATH
+PATH= $(which npm):$PATH
+sleep 2
+npm install pm2@latest -g
+EOF
