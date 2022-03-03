@@ -8,14 +8,12 @@
 sudo -i -u ubuntu bash << EOF
 source ~/.nvm/nvm.sh
 sleep 2
-nvm install 13.8.0
-sleep 2
-npm install pm2@latest -g
+nvm install 13.8.0 &>/dev/null
 EOF
 sudo -i -u ubuntu bash << EOF
 source ~/.profile
 OLDPATH= echo $PATH
 PATH= $(which npm):$PATH
 sleep 2
-npm install pm2@latest -g
+npm install pm2@latest -g &>/dev/null
 EOF
