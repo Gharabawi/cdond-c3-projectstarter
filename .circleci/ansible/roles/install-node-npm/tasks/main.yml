@@ -3,8 +3,5 @@
   script: install_node.sh
 - name: "Install pm2"
   become: yes
-  npm:
-    name: pm2
-    global: yes
-    production: yes
-    state: present    
+  shell: |
+    npm install pm2@latest -g  
