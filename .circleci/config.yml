@@ -14,6 +14,7 @@ commands:
           name: Destroy environments << parameters.workflow_id >>
           when: on_fail
           command: |
+            aws s3 rm s3://udapeople-<< parameters.workflow_id >> --recursive
             aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.workflow_id >>
             aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.workflow_id >>
 
@@ -333,6 +334,12 @@ jobs:
             cd ..
             # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/artifact.tar.gz
+      - attach_workspace:
+          at: ~/                      
       - run:
           name: Deploy backend part2
           command: |                       
