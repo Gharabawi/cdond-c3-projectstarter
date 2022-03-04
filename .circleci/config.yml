@@ -25,7 +25,7 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            echo ' Destroy environments << parameters.workflow_id >> '
+            echo  Destroy environments << parameters.workflow_id >> 
             aws s3 rm s3://udapeople-<< parameters.workflow_id >> --recursive
             aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.workflow_id >>
             aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.workflow_id >>
@@ -291,20 +291,20 @@ jobs:
       - run:
           name: Save Migration result to ENV variable
           command: |
-            echo $(cat project/backend/migration_status.txt)
+            echo $(cat backend/migration_status.txt)
             echo '1' > backend/migration_status.txt
-            echo $(cat project/backend/migration_status.txt)
+            echo $(cat backend/migration_status.txt)
 
 
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/backend/migration_status.txt
+            - backend/migration_status.txt
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
       - revert-migrations:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
-          current_value: $(cat project/backend/migration_status.txt)
+          current_value: $(cat backend/migration_status.txt)
 
 
   deploy-frontend:
@@ -327,7 +327,7 @@ jobs:
             export BACKEND_IP=$(cat inventory.txt |grep -v "[web]")
             echo ${BACKEND_IP}
             echo $PWD
-            export API_URL='http://${BACKEND_IP}:3030'
+            export API_URL="http://${BACKEND_IP}:3030"
             cd ../..
             echo $PWD
             echo $API_URL
@@ -348,7 +348,7 @@ jobs:
   
       - revert-migrations: 
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
-          current_value: $(cat project/backend/migration_status.txt)  
+          current_value: $(cat backend/migration_status.txt)  
 
   deploy-backend:
     docker:
@@ -402,7 +402,7 @@ jobs:
   
       - revert-migrations: 
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"   
-          current_value: $(cat project/backend/migration_status.txt)          
+          current_value: $(cat backend/migration_status.txt)          
 
   smoke-test:
     docker:
@@ -448,7 +448,7 @@ jobs:
   
       - revert-migrations: 
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
-          current_value: $(cat project/backend/migration_status.txt)
+          current_value: $(cat backend/migration_status.txt)
 
   cloudfront-update:
     docker:
@@ -467,7 +467,7 @@ jobs:
             export OldWorkflowID=$(aws cloudformation \
                     list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                     --no-paginate --output text)
-            echo 'OldWorkflowID: "${OldWorkflowID}"' >> $BASH_ENV 
+            echo OldWorkflowID: "${OldWorkflowID}" >> $BASH_ENV 
             echo ${OldWorkflowID}                    
             # Change the initial stack name, as applicable to you
             aws cloudformation deploy \
@@ -483,7 +483,7 @@ jobs:
   
       - revert-migrations: 
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
-          current_value: $(cat project/backend/migration_status.txt)          
+          current_value: $(cat backend/migration_status.txt)          
 
 
   cleanup:
