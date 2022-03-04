@@ -324,9 +324,10 @@ jobs:
             export API_URL='http://"${BACKEND_IP}":3030'
             cd ../..
             echo $PWD
-            echo 'API_URL=$API_URL' >> "frontend/.env"
-            echo 'ENVIRONMENT=production'  >> "frontend/.env" 
-            echo 'NODE_ENV=production' >> "frontend/.env"            
+            echo $API_URL
+            echo API_URL=$API_URL >> "frontend/.env"
+            echo ENVIRONMENT=production  >> "frontend/.env" 
+            echo NODE_ENV=production >> "frontend/.env"            
       - run:
           name: Deploy frontend objects
           command: |
