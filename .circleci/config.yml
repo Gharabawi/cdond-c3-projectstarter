@@ -478,6 +478,7 @@ jobs:
             apk add --update  tar gzip 
             apk add --update nodejs npm     
             pip3 install awscli
+      - get-backend-url            
       - run:
           name: Get old stack workflow id
           command: |
