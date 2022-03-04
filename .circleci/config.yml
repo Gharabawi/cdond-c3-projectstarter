@@ -461,6 +461,8 @@ jobs:
             apk add --update  tar gzip 
             apk add --update nodejs npm     
             pip3 install awscli
+      - attach_workspace:
+          at: ~/            
       - run:
           name: Update cloudfront distribution
           command: |
@@ -476,8 +478,12 @@ jobs:
             --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople
             
-            echo ${OldWorkflowID}
+            echo ${OldWorkflowID} >> .circleci/ansible/workflowid.txt
             echo Current workflow id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/.circleci/ansible/workflowid.txt            
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
   
@@ -497,7 +503,9 @@ jobs:
             apk add --update  tar gzip 
             apk add --update nodejs npm     
             pip3 install awscli
-      - get-backend-url            
+      - get-backend-url   
+      - attach_workspace:
+          at: ~/               
       - run:
           name: Get old stack workflow id
           command: |
@@ -505,13 +513,15 @@ jobs:
             # export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
             # echo 'STACKS: "${STACKS[@]}"' >> BASH_ENV
             export OldWorkflowID="${OldWorkflowID}"
+            echo ${OldWorkflowID}
+            cat .circleci/ansible/workflowid.txt
             # export STACKS=[${STACKS[@]}] #put the list of stacks here
             
       - run:
           name: Remove old stacks and files
           command: |
             source $BASH_ENV
-            echo ${OldWorkflowID}
+            export OldWorkflowID=$(cat .circleci/ansible/workflowid.txt)
             echo ${CIRCLE_WORKFLOW_ID:0:7}
             if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then
