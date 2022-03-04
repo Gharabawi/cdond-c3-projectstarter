@@ -69,14 +69,14 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
-      - slack/notify:
-          channel: ${SLACK_DEFAULT_CHANNEL}
-          event: fail
-          template: basic_fail_1
-      - slack/notify:
-          channel: ${SLACK_DEFAULT_CHANNEL}
-          event: pass
-          template: success_tagged_deploy_1
+      # - slack/notify:
+      #     channel: ${SLACK_DEFAULT_CHANNEL}
+      #     event: fail
+      #     template: basic_fail_1
+      # - slack/notify:
+      #     channel: ${SLACK_DEFAULT_CHANNEL}
+      #     event: pass
+      #     template: success_tagged_deploy_1
   build-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -94,14 +94,14 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
-      - slack/notify:
-          channel: ${SLACK_DEFAULT_CHANNEL}
-          event: fail
-          template: basic_fail_1
-      - slack/notify:
-          channel: ${SLACK_DEFAULT_CHANNEL}
-          event: pass
-          template: success_tagged_deploy_1          
+      # - slack/notify:
+      #     channel: ${SLACK_DEFAULT_CHANNEL}
+      #     event: fail
+      #     template: basic_fail_1
+      # - slack/notify:
+      #     channel: ${SLACK_DEFAULT_CHANNEL}
+      #     event: pass
+      #     template: success_tagged_deploy_1          
 
   test-frontend:
     docker:
@@ -465,7 +465,16 @@ jobs:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
   
       - revert-migrations: 
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"  
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+
+      - slack/notify:
+          channel: ${SLACK_DEFAULT_CHANNEL}
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          channel: ${SLACK_DEFAULT_CHANNEL}
+          event: pass
+          template: success_tagged_deploy_1 
 
   cleanup:
     docker:
@@ -515,16 +524,8 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend:
-          context: Projects
-          filters:
-            tags:
-              only: /^v.*/          
-      - build-backend:
-          context: Projects
-          filters:
-            tags:
-              only: /^v.*/          
+      - build-frontend
+      - build-backend
       - test-frontend:
           requires: [build-frontend]
       - test-backend:
@@ -552,5 +553,11 @@ workflows:
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
-          requires: [smoke-test]                                                    
+          requires: [smoke-test]
+          context: Projects
+          filters:
+            tags:
+              only: /^v.*/ 
+      - cleanup:
+          requires: [cloudfront-update]          
 
