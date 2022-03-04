@@ -7,10 +7,10 @@
 - name: Push and extract artifact
   unarchive:
     src: ~/project/artifact.tar.gz
-    dest: /home/ubuntu/backend
+    dest: ~/backend
 - name: "change directory to backend directory"
   become: yes
   shell: |
-    cd /home/ubuntu/backend
+    cd ~/backend
 - name: "Start the backend app"
   script: start_app.sh        
