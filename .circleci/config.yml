@@ -519,7 +519,10 @@ workflows:
           filters:
             branches:
               only: [dev-branch, master]
-      - build-backend
+      - build-backend:
+          filters:
+            branches:
+              only: [dev-branch, master]      
       - test-frontend:
           requires: [build-frontend]
           filters:
