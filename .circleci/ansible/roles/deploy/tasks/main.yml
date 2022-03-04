@@ -9,7 +9,6 @@
     src: ~/project/artifact.tar.gz
     dest: /home/ubuntu/backend
 - name: "change directory to backend directory"
-  become: yes
   shell: |
     cd /home/ubuntu/backend
     npm install

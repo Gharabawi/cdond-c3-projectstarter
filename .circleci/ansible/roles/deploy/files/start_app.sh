@@ -1,5 +1,6 @@
 #!/bin/bash
 sudo -i -u ubuntu bash << EOF
+cd /home/ubuntu/backend
 npm install
 npm audit fix 
 pm2 stop default
