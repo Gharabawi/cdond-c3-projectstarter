@@ -515,36 +515,78 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
+      - build-frontend:
+          filters:
+            branches:
+              only: [dev-branch, master]
       - build-backend
       - test-frontend:
           requires: [build-frontend]
+          filters:
+            branches:
+              only: [dev-branch, master]          
       - test-backend:
           requires: [build-backend]
+          filters:
+            branches:
+              only: [dev-branch, master]          
       - scan-frontend:
           requires: [build-frontend]
+          filters:
+            branches:
+              only: [dev-branch, master]          
       - scan-backend:
           requires: [build-backend]
+          filters:
+            branches:
+              only: [dev-branch, master]          
       - deploy-infrastructure:
           requires:
             - test-frontend
             - test-backend
             - scan-frontend
             - scan-backend
+          filters:
+            branches:
+              only: [master]            
       - configure-infrastructure:
           requires: [deploy-infrastructure]
+          filters:
+            branches:
+              only: [master]           
       - configure-node-and-npm:
           requires: [configure-infrastructure]
+          filters:
+            branches:
+              only: [master]           
       - run-migrations:
-          requires: [configure-node-and-npm]  
+          requires: [configure-node-and-npm]
+          filters:
+            branches:
+              only: [master]             
       - deploy-frontend:
           requires: [run-migrations]    
+          filters:
+            branches:
+              only: [master]           
       - deploy-backend:
           requires: [run-migrations]    
+          filters:
+            branches:
+              only: [master]           
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
+          filters:
+            branches:
+              only: [master]           
       - cloudfront-update:
           requires: [smoke-test]
+          filters:
+            branches:
+              only: [master]           
       - cleanup:
           requires: [cloudfront-update]          
+          filters:
+            branches:
+              only: [master]           
 
