@@ -320,9 +320,10 @@ jobs:
             cd .circleci/ansible
             export BACKEND_IP=$(cat inventory.txt |grep -v "[web]")
             echo ${BACKEND_IP}
-
+            echo $PWD
             export API_URL='http://"${BACKEND_IP}":3030'
-            cd ~/
+            cd ../..
+            echo $PWD
             echo 'API_URL=$API_URL' >> "frontend/.env"
             echo 'ENVIRONMENT=production'  >> "frontend/.env" 
             echo 'NODE_ENV=production' >> "frontend/.env"            
