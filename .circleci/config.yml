@@ -43,7 +43,7 @@ commands:
           when: on_fail
           command: |
             source $BASH_ENV
-            if(( $SUCCESS == 1 )) 
+            if(( $SUCCESS == 1 )); 
             then
              cd ~/project/backend
              npm install
@@ -320,6 +320,7 @@ jobs:
           command: |
             cd .circleci/ansible
             export BACKEND_IP=$(cat inventory.txt |grep -v "[web]")
+            echo ${BACKEND_IP}
             export API_URL='http://"${BACKEND_IP}":3030'
       - run:
           name: Deploy frontend objects
@@ -483,16 +484,16 @@ jobs:
           name: Get old stack workflow id
           command: |
             source $BASH_ENV
-            export STACKS=[$(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text)]
-            echo 'STACKS: "${STACKS[@]}"' >> BASH_ENV
+            # export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
+            # echo 'STACKS: "${STACKS[@]}"' >> BASH_ENV
             export OldWorkflowID="${OldWorkflowID}"
-            export STACKS=[${STACKS[@]}] #put the list of stacks here
+            # export STACKS=[${STACKS[@]}] #put the list of stacks here
             
       - run:
           name: Remove old stacks and files
           command: |
             source $BASH_ENV
-            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}" ]]
             then
               aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
