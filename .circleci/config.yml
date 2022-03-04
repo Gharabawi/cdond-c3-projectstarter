@@ -268,11 +268,17 @@ jobs:
 
   run-migrations:
     docker:
-      - image: circleci/node:13.8.0
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - restore_cache:
           keys: [backend-build]
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update tar gzip 
+            apk add --update nodejs npm     
+            pip3 install awscli 
       - run:
           name: Run migrations
           command: |
@@ -290,8 +296,8 @@ jobs:
       #     root: ~/
       #     paths:
       #       - project/backend/migration_status.txt
-      # - destroy-environment:
-      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
       - revert-migrations:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
@@ -304,17 +310,10 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Install dependencies tar gzip
+          name: Install dependencies
           command: |
             apk add --update ansible tar gzip 
-      - run:
-          name: Install dependencies python node npm
-          command: |
-            apk add --update ansible nodejs npm     
-      - run:
-          name: Install dependencies ansible awscli
-          command: |
-            apk add --update ansible
+            apk add --update nodejs npm     
             pip3 install awscli                
       - run:
           name: Get backend url
@@ -347,16 +346,10 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Install dependencies tar gzip
+          name: Install dependencies
           command: |
             apk add --update  tar gzip 
-      - run:
-          name: Install dependencies python node npm
-          command: |
-            apk add --update python3 nodejs npm     
-      - run:
-          name: Install dependencies ansible awscli
-          command: |
+            apk add --update nodejs npm     
             apk add --update ansible
             pip3 install awscli  
       - run:
@@ -446,63 +439,77 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install dependencies tar gzip
+          name: Install dependencies
           command: |
             apk add --update  tar gzip 
-      - run:
-          name: Install dependencies python node npm
-          command: |
             apk add --update nodejs npm     
-      - run:
-          name: Install dependencies ansible awscli
-          command: |
             pip3 install awscli
       - run:
           name: Update cloudfront distribution
           command: |
+            export OldWorkflowID=$(aws cloudformation \
+                    list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+                    --no-paginate --output text)
+            echo 'OldWorkflowID: "${OldWorkflowID}"' >> $BASH_ENV 
+            echo ${OldWorkflowID}                    
             # Change the initial stack name, as applicable to you
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
-            --stack-name InitialStack \
+            --stack-name "InitialStack-${OldWorkflowID}" \
             --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople
+            
+            echo ${OldWorkflowID}
+            echo Current workflow id: "${CIRCLE_WORKFLOW_ID:0:7}"
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
   
       - revert-migrations: 
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"  
 
-  # cleanup:
-  #     docker:
-  #       - image: amazon/aws-cli
-  #     steps:
-  #       - checkout
-  #       - run:
-  #           name: Get old stack workflow id
-  #           command: |
-  #             # Fetch the Old workflow ID
-  #             export OldWorkflowID=$(aws cloudformation \
-  #                     list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-  #                     --no-paginate --output text) 
-  #             echo 'OldWorkflowID: "${OldWorkflowID}"' >> $BASH_ENV
-  #             echo 'CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"' >> $BASH_ENV
-  #             # Fetch the stack names          
-  #             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-  #             --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
-  #             echo 'STACKS: "${STACKS[@]}"' >> BASH_ENV
-  #             export OldWorkflowID="${OldWorkflowID}"
-  #             export STACKS=[${STACKS[@]}] #put the list of stacks here
-              
-  #       - run:
-  #           name: Remove old stacks and files
-  #           command: |
-  #             source $BASH_ENV
-  #             if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
-  #             then
-  #               aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
-  #               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
-  #               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
-  #             fi
+  cleanup:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update  tar gzip 
+            apk add --update nodejs npm     
+            pip3 install awscli
+      - run:
+          name: Get old stack workflow id
+          command: |
+            source $BASH_ENV
+            # Fetch the Old workflow ID
+            # export OldWorkflowID=$(aws cloudformation \
+            #         list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+            #         --no-paginate --output text) 
+            # echo 'OldWorkflowID: "${OldWorkflowID}"' >> $BASH_ENV
+            echo 'CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"' >> $BASH_ENV
+            # Fetch the stack names          
+            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+            --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+            echo 'STACKS: "${STACKS[@]}"' >> BASH_ENV
+            export OldWorkflowID="${OldWorkflowID}"
+            export STACKS=[${STACKS[@]}] #put the list of stacks here
+            
+      - run:
+          name: Remove old stacks and files
+          command: |
+            source $BASH_ENV
+            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            then
+              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+              aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+            fi
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+  
+      - revert-migrations: 
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"                
     
                   
 workflows:
