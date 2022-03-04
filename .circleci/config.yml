@@ -396,7 +396,7 @@ jobs:
             export BACKEND_IP=$(cat inventory.txt |grep -v "web")
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
-            ansible-playbook -i inventory.txt prometheus-node-exporter
+            ansible-playbook -i inventory.txt prometheus-node-exporter.yml
         
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
