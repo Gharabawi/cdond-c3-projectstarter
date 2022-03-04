@@ -42,6 +42,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
+            cat backend/migration_status.txt
             export SUCCESS=$(cat backend/migration_status.txt)
             if(( $SUCCESS == 1 )); 
             then
