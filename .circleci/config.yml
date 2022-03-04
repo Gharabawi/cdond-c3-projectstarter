@@ -44,7 +44,7 @@ commands:
           command: |
             cat backend/migration_status.txt
             export SUCCESS=$(cat backend/migration_status.txt)
-            if(( $SUCCESS == 1 )); 
+            if(( $SUCCESS == 1 )) 
             then
              cd ~/project/backend
              npm install
@@ -432,7 +432,7 @@ jobs:
             if curl -s ${URL} | grep "Welcome"
             then
                 # Change this to 0 after the job fails
-              return 1
+              return 0
             else
               return 1
             fi
@@ -441,6 +441,31 @@ jobs:
   
       - revert-migrations: 
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+
+  cloudfront-update:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            yum -y install tar gzip
+            yum -y python3 nodejs npm
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            # Change the initial stack name, as applicable to you
+            aws cloudformation deploy \
+            --template-file .circleci/files/cloudfront.yml \
+            --stack-name InitialStack \
+            --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --tags project=udapeople
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+  
+      - revert-migrations: 
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"  
 
                   
 workflows:
@@ -481,5 +506,7 @@ workflows:
       - deploy-backend:
           requires: [run-migrations]    
       - smoke-test:
-          requires: [deploy-backend, deploy-frontend]                                          
+          requires: [deploy-backend, deploy-frontend]
+      - cloudfront-update:
+          requires: [smoke-test]                                                    
 
