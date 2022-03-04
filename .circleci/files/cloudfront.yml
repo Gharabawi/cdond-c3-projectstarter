@@ -31,8 +31,7 @@ Resources:
             QueryString: False
           TargetOriginId: webpage
           ViewerProtocolPolicy: allow-all
-        CacheBehavior:
-          ViewerProtocolPolicy: redirect-to-https
+
 
 
 Outputs:
