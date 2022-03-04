@@ -299,7 +299,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - backend/migration_status.txt
+            - project/backend/migration_status.txt
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
       - revert-migrations:
