@@ -34,7 +34,9 @@ commands:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
       workflow_id:
-        type: string     
+        type: string 
+      current_value:
+        type: string    
     steps:
       - attach_workspace:
           at: ~/
@@ -42,7 +44,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            if(( $SUCCESS == 1 )); 
+            if(( $SUCCESS == << parameters.current_value >> )); 
             then
              cd ~/project/backend
              npm install
@@ -289,16 +291,20 @@ jobs:
       - run:
           name: Save Migration result to ENV variable
           command: |
-            echo "export SUCCESS='1'" >> $BASH_ENV
+            echo $(cat project/backend/migration_status.txt)
+            echo '1' > backend/migration_status.txt
+            echo $(cat project/backend/migration_status.txt)
 
-      # - persist_to_workspace:
-      #     root: ~/
-      #     paths:
-      #       - project/backend/migration_status.txt
+
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/backend/migration_status.txt
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
       - revert-migrations:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+          current_value: $(cat project/backend/migration_status.txt)
 
 
   deploy-frontend:
@@ -321,7 +327,7 @@ jobs:
             export BACKEND_IP=$(cat inventory.txt |grep -v "[web]")
             echo ${BACKEND_IP}
             echo $PWD
-            export API_URL='http://"${BACKEND_IP}":3030'
+            export API_URL='http://${BACKEND_IP}:3030'
             cd ../..
             echo $PWD
             echo $API_URL
@@ -341,7 +347,8 @@ jobs:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
   
       - revert-migrations: 
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"  
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+          current_value: $(cat project/backend/migration_status.txt)  
 
   deploy-backend:
     docker:
@@ -395,6 +402,7 @@ jobs:
   
       - revert-migrations: 
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"   
+          current_value: $(cat project/backend/migration_status.txt)          
 
   smoke-test:
     docker:
@@ -440,6 +448,7 @@ jobs:
   
       - revert-migrations: 
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+          current_value: $(cat project/backend/migration_status.txt)
 
   cloudfront-update:
     docker:
@@ -474,6 +483,7 @@ jobs:
   
       - revert-migrations: 
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+          current_value: $(cat project/backend/migration_status.txt)          
 
 
   cleanup:
@@ -501,6 +511,8 @@ jobs:
           name: Remove old stacks and files
           command: |
             source $BASH_ENV
+            echo ${OldWorkflowID}
+            echo ${CIRCLE_WORKFLOW_ID:0:7}
             if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then
               aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
