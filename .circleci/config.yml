@@ -13,6 +13,7 @@ commands:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
             --output text)' >> $BASH_ENV
+            
 
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
